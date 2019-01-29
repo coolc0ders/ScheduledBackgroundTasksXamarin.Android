@@ -13,7 +13,7 @@ using Android.Widget;
 namespace ScheduledBackgroundTask
 {
     [BroadcastReceiver]
-    public class ReminderReceiver : BroadcastReceiver
+    public class ScheduleReceiver : BroadcastReceiver
     {
         public override void OnReceive(Context context, Intent intent)
         {

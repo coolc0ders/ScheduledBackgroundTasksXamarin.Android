@@ -1,5 +1,6 @@
 ﻿using System;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.Design.Widget;
@@ -12,6 +13,10 @@ namespace ScheduledBackgroundTask
     [Activity(Label = "@string/app_name", Theme = "@style/AppTheme.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
+        private bool _scheduleRunning = false;
+        private PendingIntent _pendingIntent;
+        private AlarmManager _alarm;
+        private int _interval = 5000;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -23,6 +28,9 @@ namespace ScheduledBackgroundTask
 
             FloatingActionButton fab = FindViewById<FloatingActionButton>(Resource.Id.fab);
             fab.Click += FabOnClick;
+
+            Intent intent = new Intent(this, typeof(ScheduleReceiver));
+            _pendingIntent = PendingIntent.GetBroadcast(this, 0, intent, 0);
         }
 
         public override bool OnCreateOptionsMenu(IMenu menu)
@@ -44,9 +52,21 @@ namespace ScheduledBackgroundTask
 
         private void FabOnClick(object sender, EventArgs eventArgs)
         {
-            View view = (View) sender;
-            Snackbar.Make(view, "Replace with your own action", Snackbar.LengthLong)
-                .SetAction("Action", (Android.Views.View.IOnClickListener)null).Show();
+            if (!_scheduleRunning)
+            {
+                //Starting the scheduled task
+                _alarm = (AlarmManager)GetSystemService(AlarmService);
+                _alarm.SetRepeating(AlarmType.RtcWakeup, DateTime.Now.TimeOfDay.Milliseconds, _interval, _pendingIntent);
+                Toast.MakeText(this, "Schedule started", ToastLength.Short).Show();
+            }
+            else
+            {
+                if (_alarm != null)
+                {
+                    _alarm.Cancel(_pendingIntent);
+                    Toast.MakeText(this, "Schedule stopped", ToastLength.Short).Show();
+                }
+            }
         }
 	}
 }
