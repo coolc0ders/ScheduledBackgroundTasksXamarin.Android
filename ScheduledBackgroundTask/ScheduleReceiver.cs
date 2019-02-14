@@ -17,7 +17,7 @@ namespace ScheduledBackgroundTask
     {
         public override void OnReceive(Context context, Intent intent)
         {
-            Toast.MakeText(context, "Received intent!", ToastLength.Short).Show();
+            Toast.MakeText(context, "Received intent! You can run your background task here.", ToastLength.Short).Show();
         }
     }
 }
